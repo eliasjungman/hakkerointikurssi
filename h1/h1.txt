@@ -1,0 +1,50 @@
+h1 Scope First, Controls Later
+
+a) Perustaso
+
+1. Mitä kuuluu soveltamisalaan
+
+Kotiverkon perusinfra: Kotiverkkoni on puhelimen hotspot, koska kodissani ei ole vielä reititintä. Hotspotissa ei ole muita laitteita kuin läppärini.
+Puhelin on yhdistetty radiomastoon sim kortin avulla.
+
+Kurssiharjoituksiin käytettävät laitteet: läppäri, virtuaalikoneet, harjoituspalvelin ja puhelin
+
+Tiedot:
+kurssimateriaalit
+omat muistiinpanot ja dokumentaatiot
+repositoriot githubissa
+harjoitusaineistot: moodle, teron kotisivut
+laksyn käyttäminen tehtävien palautuksiin
+Internetin käyttäminen tiedon etsintään
+
+Tiedot: 
+
+2. Mitä rajaat ulos ja miksi
+
+operaattorin verkko, internetissä olevat laitteet lukuunottamatta harjoituspalvelinta. 
+Muiden laitteet, jos ovat yhdistäneet minun avoimeen puhelimen hotspottiini. Sama selitys kuin ylempänä. 
+Radiomastot
+
+"omistajuus": En omista näitä laitteita ja muiden laitteisiin ei saa tehdä hakkerointiä ilman lupaa. Muiden palvelimia on kuitenkin tarkoitus käyttää tiedonhakuun jos ne löytyvät hakukoneesta, esimerkiksi wikipedian palvelin. "Merkityksettömyys kurssin näkökulmasta": Ei ole tarkoitus testata hakkerointia näihin laitteisiin vaan nimenomaan harjoituspalvelimeen.
+
+3. Keskeiset rajapinnat
+
+Pilvipalvelut: github, one drive
+Toimittajat: elisa, microsoft, haaga-helia
+
+Tuotos (palautus):
+
+Evidence-lisä (1–3 riviä per kohta):
+
+- Puhelimen hotspotin asetussivu
+- vm listaus
+
+b) Sidotaan Standardiin
+
+minä itse
+vaatimus: datan pitää säilyä läppärillä joten haitallisia ohjelmia ei testata huvikseen omalla koneella
+varmuuskopioidaan tärkeät tiedostot ja käytetään vm
+evidence: Tarkistetaan että varmuuskopioinnin palautus onnistuu. Käytetään koulun onedrivea ja githubia koulutehtäviin.
+
+internet-operaattori
+vaatimus: pitää noudattaa käyttöehtoja
