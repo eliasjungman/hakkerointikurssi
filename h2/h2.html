@@ -22,7 +22,57 @@
 
     I referenced sources that arre given in homework assigment h2:
     <a href="https://terokarvinen.com/application-hacking/#homework">https://terokarvinen.com/application-hacking/#homework</a>
-    a) 
+
+    a) Break into 010-staff-only. See Karvinen 2024: Hack'n Fix
+
+    Environment
+    OS, browser, hardware, network
+    windows 11 with kali Linux virtualbox
+
+    Any precautions taken
+    virtualbox is a precaution, code is running a virtualized os
+
+    hack
+    What methods you used for testing the applications (successfull and unsuccesfull).
+    I used developer tools and sql injection
+    hack is partially successful
+
+    What the vulnerability is?
+    How to exploit the vulnerability and how each part of your exploit work.
+    Refer all documentation and sources you used
+
+    https://terokarvinen.com/hack-n-fix/
+    this site gave me instructions how to run the vulnerable server
+    1. i installed: $ sudo apt-get -y install wget unzip micro python3-flask python3-flask-sqlalchemy
+    2. i unzipped tero challenge and started the server.
+    3. i wrote "123" user pin code and got: "Your password is Somedude"
+    4. i used developer tools to edit input type number to input type text
+    5. i wrote "123' or 1=1; --" in pin code and got: "Your password is foo"
+
+    I looked the source code and this is someone else's password i didn't got admin password, but the code has sql vulnerability.
+
+    b) fixing code
+    i cast pin value to int and int value back to str. Then if user enters other than numeric value, internal server error happens
+    because str value "hello" cant be casted int but str value "12" can be casted int
+
+    original line:
+    sql = "SELECT password FROM pins WHERE pin='"+pin+"';"
+
+    edited line:
+    sql = "SELECT password FROM pins WHERE pin='"+str(int(pin))+"';"
+
+    better ways to do it (needs a lot of time):
+    1. use table class to search data, table class is coded to escape data
+    -- for example $table->select(table_name, ["column1", "column2"], ["username" => "John", "pin" => 123])
+    -- definition (table_name :str, columns :array, where :array)
+    -- you can use framework table class or code own table class
+    2. use sql prepare statements or parametrised query
+
+    sources:
+    https://www.btelligent.com/en/blog/best-practice-for-sql-statements-in-python-1
+    https://mojoauth.com/escaping/sql-escaping-in-python#real-world-examples-for-sql-escaping-using-python
+
+
 
     
 </body>
