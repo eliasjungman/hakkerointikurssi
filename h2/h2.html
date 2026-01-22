@@ -23,14 +23,15 @@
     I referenced sources that arre given in homework assigment h2:
     <a href="https://terokarvinen.com/application-hacking/#homework">https://terokarvinen.com/application-hacking/#homework</a>
 
-    a) Break into 010-staff-only. See Karvinen 2024: Hack'n Fix
-
     Environment
     OS, browser, hardware, network
     windows 11 with kali Linux virtualbox
+    firefox
 
     Any precautions taken
     virtualbox is a precaution, code is running a virtualized os
+
+    a) Break into 010-staff-only. See Karvinen 2024: Hack'n Fix
 
     hack
     What methods you used for testing the applications (successfull and unsuccesfull).
@@ -72,7 +73,42 @@
     https://www.btelligent.com/en/blog/best-practice-for-sql-statements-in-python-1
     https://mojoauth.com/escaping/sql-escaping-in-python#real-world-examples-for-sql-escaping-using-python
 
+    c) dirtfuzt-1 challenge
+    first, i used ffuf command to check hidden directories
+    i downloaded common.txt file
 
+    tero karvinen blog (https://terokarvinen.com/2023/fuzz-urls-find-hidden-directories/) said: "We can use one from Seclists by Daniel Miessler and others.
+    $ wget https://raw.githubusercontent.com/danielmiessler/SecLists/master/Discovery/Web-Content/common.txt"
+
+    ffuf -w common.txt -u http://127.0.0.1:8000/FUZZ
+
+    FUZZ means that it will be replaced as wordlist word
+    -w means wordlist file location
+    -u is the url
+
+    i got status 200 for every url so Tero Karvinen blog says i can use -fs to filter by size. I used -fs 154 and got .git directory and wp-admin directory
+    wp-admin is probably wordpress admin site, maybe endpoint is using wordpress hmm...
+    .git directory is when you use git, site owner forget to exclude .git directory.
+
+    <img src="dirtfuz.png"></img>
+
+    d) Break into 020-your-eyes-only. See Karvinen 2024: Hack'n Fix
+
+    first i created a new user 
+    <img src="register.png"></img>
+    i tried to enter admin dashboard but get error 403 
+    <img src="front.png"></img>
+    so i used ffuf to search hidden pages and i found admin-console
+    <img src="ffuf.png"></img>
+
+    I can see a secret page. When i signed out, i can't see the page anymore so authentication is checked but authorization is not.
+
+    I tried to fix the problem using tree and locating the files but i didn't understand django and didn't got it fixed so i used fuzz-urls-find-hidden-directories
+
+    And i got it working using the solution https://rbin.dev/diary/entries/diary.html?entry=SH24-002&week=
+
+    So, Robin Niinemets said in the solution that challenges/020-your-eyes-only/logtin/hats/views.py is the problematic files
+    Robin Niinemets fixed the exploit adding authorization check to admin-console
 
     
 </body>
