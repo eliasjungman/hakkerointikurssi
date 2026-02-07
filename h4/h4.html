@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H4</title>
+</head>
+<body style="white-space: pre-line;">
+    x)
+    i watched the video: <a href="https://www.youtube.com/watch?v=oTD_ki86c9I">GHIDRA for Reverse Engineering (PicoCTF 2022 #42 'bbbloat')</a>
+
+    - <a href="https://ltrace.org/">ltrace webpage</a> says that: "ltrace intercepts and records dynamic library calls which are called by an executed process and the signals received by that process"
+    -> in the video: ltrace program says that it exited with code 0
+
+    man page says that strace traces system calls and signals.
+    -> in the video strace gives more information for example mapping memory, functions that are run etc
+
+    GHIDRA is a tool that you can use to reverse engineer a binary file. You can see a assembler code and you can also investigate a code and make notes about the mess
+    -> in the video, he renamed function and investigated if else and got the flag
+
+    a) Installed ghidra, my version is 12.0.1
+    b) downloaded and unzipped packd file
+    1. created new ghidra project
+    2. imported packd binary
+    <img src="import.png" />
+    3. opened code browser, yes i want to analyze. Going with default options
+    <img src="analyze.png" />
+
+    so the program starts with function entry() which is c programming language compiler function and then program goes to main function
+
+    references:
+    https://medium.com/@greg-chapman/reveng-01-finding-main-in-32cdb8e1e9b5
+
+    I searched main function with a guide but didn't find it so i try to look at what entry function does
+    i found entry function in symbol tree
+
+    <img src="1.png" />
+    so this code goes to first function
+
+    <img src="2.png" />
+    <img src="not-main.png" />
+    this is definitely not main, code returns also back.
+
+    lets go back
+    so this second func is definitely a main function
+    <img src="3.png" />
+
+    This code is a fully mess so i watched a hint. "did you remember to unpack the packing" no i didn't so lets do that
+
+    <code>
+┌──(kali㉿kali)-[~/Desktop/packd]
+└─$ upx -d packd 
+                       Ultimate Packer for eXecutables
+                          Copyright (C) 1996 - 2024
+UPX 4.2.4       Markus Oberhumer, Laszlo Molnar & John Reiser    May 9th 2024
+
+        File size         Ratio      Format      Name
+   --------------------   ------   -----------   -----------
+     25263 <-      5900   23.35%   linux/amd64   packd
+
+Unpacked 1 file.
+</code>
+
+    In ghidra, new file not updated, so i deleted whole file in ghidra and imported it again.
+    Now i didn't find the entry function but i found the main function. This is definitely a main func
+
+    <img src="main.png" />
+
+    i renamed some functions
+    <img src="main2.png" />
+
+    what program does:
+    1. asks the password
+    2. if the password is "piilos-ananas" return true if not return false -> store it on the is_correct var
+    3. if is_correct is true, return the flag
+
+    This task is very hard and i spent a lot of time, I figured out the problem was i didn't unpacked the program first. When i unpacked it, it was easier to analyze code.
+    
+    c) can't got it edited. ghidra decompile tool blocks edits.
+
+    d) I downloaded crackmes <code>git clone https://github.com/NoraCodes/crackmes.git</code>
+
+    e) <code>make crackme01</code>
+
+    lets try to run:
+<code>
+┌──(kali㉿kali)-[~/Desktop/crackmes]
+└─$ ./crackme01.64 
+Need exactly one argument.
+                                                                                                                                                                                                                                            
+┌──(kali㉿kali)-[~/Desktop/crackmes]
+└─$ ./crackme01.64 1
+No, 1 is not correct.
+
+</code>
+
+i used strings
+
+<code>
+┌──(kali㉿kali)-[~/Desktop/crackmes]
+└─$ strings crackme01.64 
+K4z\
+w/lib64/ld-linux-x86-64.so.2
+puts
+__libc_start_main
+__cxa_finalize
+printf
+strncmp
+libc.so.6
+GLIBC_2.2.5
+GLIBC_2.34
+_ITM_deregisterTMCloneTable
+__gmon_start__
+_ITM_registerTMCloneTable
+PTE1
+u+UH
+Need exactly one argument.
+password1
+No, %s is not correct.
+Yes, %s is correct!
+</code>
+
+password is definitely password1
+
+<img src="correct.png" />
+
+this was easy
+
+    e) <code>make crackme01e</code>
+
+    i used strings
+
+    <code>
+        ...
+        Need exactly one argument.
+        slm!paas.k
+        No, %s is not correct.
+        Yes, %s is correct!
+        ...
+    </code>
+    lets try that slm!paas.k
+
+<code>
+┌──(kali㉿kali)-[~/Desktop/crackmes]
+└─$ ./crackme01e.64 slm!paas.k   
+zsh: event not found: paas.k
+</code>      
+need to escape this ! to \!
+<code>                                                               
+┌──(kali㉿kali)-[~/Desktop/crackmes]
+└─$ ./crackme01e.64 slm\!paas.k  
+Yes, slm!paas.k is correct!
+</code>
+
+    f) <code>make crackme02</code>
+
+i tried looking password with strings
+<code>
+    ┌──(kali㉿kali)-[~/Desktop/crackmes]
+└─$ strings crackme02.64 
+/lib64/ld-linux-x86-64.so.2
+puts
+__libc_start_main
+__cxa_finalize
+printf
+libc.so.6
+GLIBC_2.2.5
+GLIBC_2.34
+_ITM_deregisterTMCloneTable
+__gmon_start__
+_ITM_registerTMCloneTable
+PTE1
+u+UH
+Need exactly one argument.
+No, %s is not correct.
+password1
+Yes, %s is correct!
+
+</code>
+
+password1 not worked so i opened the project in ghidra
+
+<img src="g1.png" />
+
+this is the source code:
+
+<img src="code.png" />
+
+i dont understand why password1 not worked
+
+too hard, i spent lot of time. So i skip this task
+</body>
+</html>
