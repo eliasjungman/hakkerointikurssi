@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H5</title>
+</head>
+<body style="white-space: pre-line;">
+    Links:
+    1. https://quentinkaiser.be/security/2025/07/25/rooting-tapo-c200/
+    2. https://www.evilsocket.net/2025/12/18/TP-Link-Tapo-C200-Hardcoded-Keys-Buffer-Overflows-and-Privacy-in-the-Era-of-AI-Assisted-Reverse-Engineering/
+    Google keywords: tapo c200 rooting
+
+    Task:
+    In this exercise, you will act as a white-hat hacker, and your task is to investigate vulnerabilities in the Tapo C200 camera. You don’t have the camera yet, and you don't have  physical access to examine the device. You only can investigate software itself.
+
+    Your task is to find out how to obtain the camera’s firmware file and decrypt it. (Instructions can be found in the contents of link 2.) To decrypt it, you will need the tp-link-decrypt program (hosted on GitHub): https://github.com/robbins/tp-link-decrypt, and you will need to fix it so that you can compile it into an executable. After that, you can begin analyzing the file itself.
+
+    Write a report on your investigation:
+
+    a) How did you obtain the file?
+
+    I didn't find image from tplink website directly so i need to get image from other way.
+
+    I installed aws cli with this command:
+    The command is from the <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions">amazon site</a>
+    To install the AWS CLI, run the following commands.
+    <code>
+    $ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+    </code>
+
+    I followed a guide (see link 2.). Getting the firmware said that i can download the image from tplink cloud. I downloaded same image that guide said me.
+
+    <code>aws s3 cp s3://download.tplinkcloud.com/firmware/Tapo_C200v3_en_1.4.2_Build_250313_Rel.40499n_up_boot-signed_1747894968535.bin . --no-sign-request</code>
+
+    b) How did you fix the tp-link-decrypt program?
+    <code>
+    ┌──(kali㉿kali)-[~/Desktop/tp-link-decrypt]
+    └─$ make
+    gcc -Wno-implicit-function-declaration -Isrc -c src/tp-link-decrypt.c -o obj/tp-link-decrypt.o
+    src/tp-link-decrypt.c:58:10: fatal error: openssl/evp.h: No such file or directory
+    58 | #include <openssl/evp.h>
+        |          ^~~~~~~~~~~~~~~
+    compilation terminated.
+    make: *** [Makefile:26: obj/tp-link-decrypt.o] Error 1
+    </code>
+    I asked chatgpt why the program is not compiling (prompt: "https://github.com/robbins/tp-link-decrypt fix this") and chatgpt said i need to run this:
+    <code>
+    ┌──(kali㉿kali)-[~/Desktop/tp-link-decrypt]
+    └─$ sudo apt install libssl-dev
+    </code>
+    Another error...
+    <code>
+    ┌──(kali㉿kali)-[~/Desktop/tp-link-decrypt]
+    └─$ make                       
+    gcc -Wno-implicit-function-declaration -Isrc -c src/tp-link-decrypt.c -o obj/tp-link-decrypt.o
+    gcc -Wno-implicit-function-declaration -Isrc -c src/md5/md5.c -o obj/md5/md5.o
+    src/md5/md5.c: In function ‘MD5_Init’:
+    src/md5/md5.c:105:6: warning: old-style function definition [-Wold-style-definition]
+    105 | void MD5_Init (mdContext)
+        |      ^~~~~~~~
+    src/md5/md5.c:107:1: error: number of arguments doesn’t match prototype
+    107 | {
+        | ^
+    In file included from src/md5/md5.c:37:
+    src/md5/md5.h:64:6: error: prototype declaration
+    64 | void MD5_Init ();
+        |      ^~~~~~~~
+    src/md5/md5.c: In function ‘MD5_Update’:
+    src/md5/md5.c:122:6: warning: old-style function definition [-Wold-style-definition]
+    122 | void MD5_Update (mdContext, inBuf, inLen)
+        |      ^~~~~~~~~~
+    src/md5/md5.c:126:1: error: number of arguments doesn’t match prototype
+    126 | {
+        | ^
+    src/md5/md5.h:65:6: error: prototype declaration
+    65 | void MD5_Update ();
+        |      ^~~~~~~~~~
+    src/md5/md5.c:151:7: error: too many arguments to function ‘Transform’; expected 0, have 2
+    151 |       Transform (mdContext->buf, in);
+        |       ^~~~~~~~~  ~~~~~~~~~~~~~~
+    src/md5/md5.c:51:13: note: declared here
+    51 | static void Transform ();
+        |             ^~~~~~~~~
+    src/md5/md5.c: In function ‘MD5_Final’:
+    src/md5/md5.c:160:6: warning: old-style function definition [-Wold-style-definition]
+    160 | void MD5_Final (hash, mdContext)
+        |      ^~~~~~~~~
+    src/md5/md5.c:163:1: error: number of arguments doesn’t match prototype
+    163 | {
+        | ^
+    src/md5/md5.h:66:6: error: prototype declaration
+    66 | void MD5_Final ();
+        |      ^~~~~~~~~
+    src/md5/md5.c:178:3: error: too many arguments to function ‘MD5_Update’; expected 0, have 3
+    178 |   MD5_Update (mdContext, PADDING, padLen);
+        |   ^~~~~~~~~~  ~~~~~~~~~
+    src/md5/md5.c:122:6: note: declared here
+    122 | void MD5_Update (mdContext, inBuf, inLen)
+        |      ^~~~~~~~~~
+    src/md5/md5.c:186:3: error: too many arguments to function ‘Transform’; expected 0, have 2
+    186 |   Transform (mdContext->buf, in);
+        |   ^~~~~~~~~  ~~~~~~~~~~~~~~
+    src/md5/md5.c:51:13: note: declared here
+    51 | static void Transform ();
+        |             ^~~~~~~~~
+    src/md5/md5.c: In function ‘Transform’:
+    src/md5/md5.c:203:13: warning: old-style function definition [-Wold-style-definition]
+    203 | static void Transform (buf, in)
+        |             ^~~~~~~~~
+    make: *** [Makefile:26: obj/md5/md5.o] Error 1
+    </code>
+
+    i spent many hours using chatgpt, tried to think what is the problem but didn't solve it so, i can't continue further because decryptor didn't compile.
+
+    c) How did you analyze the file—what tools did you use?
+    I wanted to use ghidra and binwalk but because the file is encrypted and i cannot decrypt it, can't use the tools.
+
+    d) What findings did you make?
+    no findings :(
+
+</body>
+</html>
