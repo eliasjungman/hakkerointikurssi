@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H7</title>
+</head>
+<body style="white-space: pre-line;">
+
+    x)
+    Schneier 2015: Applied Cryptography, 20ed: Chapter 1: Foundations tells that "XOR is exclusive-or operation: ‘^’ in C or <img src="xor.png" /> in mathematical notation. It's a standard operation on bits:
+    0 <img src="xor.png" /> 0 = 0
+
+    0 <img src="xor.png" /> 1 = 1
+
+    1 <img src="xor.png" /> 0 = 1
+
+    1 <img src="xor.png" /> 1 = 0
+    "
+    According to my understanding xor operator checks that is bits different.
+
+    If you are interested in to creating a computer processor or train bit operators, i recommend playing a nandgame: <a href=https://nandgame.com/>https://nandgame.com</a>
+
+    ---
+    Solve <a href="https://cryptopals.com/sets/1">CryptoPals Set 1 challenges</a>. Tasks can be solved with any programming language and using any text editor or IDE. Tasks shouldn't be solved with AI, as it just copies the model solution directly from its training material.
+
+    environment:
+    linux xubuntu
+    python 3.12.3
+
+    1) First challenge is to Convert hex to base64
+    i use bytes class to "convert a hexadecimal string into a bytes object" (<a href="https://www.geeksforgeeks.org/python/bytes-fromhex-method-python/">source</a>)
+    <code>
+    >>> text = bytes.fromhex("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
+    >>> print(text)
+    b"I'm killing your brain like a poisonous mushroom"
+    </code>
+    According to the hint of the <a href="https://terokarvinen.com/getting-started-python-cryptopals/">terokarvinen page</a>. I can use base64.b64encode
+    -> using this encodes the string to base64 string
+
+    <code>
+        import base64
+    </code>
+    I can't to this:
+    <code>
+        >>> base64.b64encode("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
+        Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+        File "/usr/lib/python3.12/base64.py", line 58, in b64encode
+            encoded = binascii.b2a_base64(s, newline=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        TypeError: a bytes-like object is required, not 'str'
+    </code>
+    or this:
+    <code>
+        >>> base64.b64encode("I'm killing your brain like a poisonous mushroom")
+        Traceback (most recent call last):
+        File "<stdin>", line 1, in <module>
+        File "/usr/lib/python3.12/base64.py", line 58, in b64encode
+            encoded = binascii.b2a_base64(s, newline=False)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        TypeError: a bytes-like object is required, not 'str'
+    </code>
+    It needs to be a bytes object
+    so this is correct:
+    <code>
+        >>> text = bytes.fromhex("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
+        >>> base64.b64encode(text)
+        b'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t'
+    </code>
+
+    2) I didn't got it working. I watched all the hints and used ai
+    <a href="https://chatgpt.com/c/69b02d2c-791c-832b-bbbd-73cd240369a3">chatgpt discussion</a> :
+
+    <code>
+        >>> s1 = b"1c0111001f010100061a024b53535009181c"
+        >>> s2 = b"686974207468652062756c6c277320657965"
+        >>> output = bytes(b1 ^ b2 for b1, b2 in zip(s1, s2))
+        >>> output.hex()
+        '075b06080605020006520609060402000604065406510201070402000700060c06010756'
+    </code>
+
+    but this is wrong answer according to the website.
+    Correct hex is: 746865206b696420646f6e277420706c6179
+
+    3) i don't know what i need to do. Skipped
+    4) 2,3 and 4 task very hard to do so i skipped also this one. Maybe this task bring joy, but very hard tasks and don't know what to do to get correct answer
+
+
+</body>
+</html>
